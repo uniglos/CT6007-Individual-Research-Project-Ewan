@@ -1,0 +1,11 @@
+Guoshuai Zhang, Jiaji Wu, Gwanggil Jeon, Yuan Chen, Yuhui Wang, Mingzhou Tan,
+Sustainable society via complexity analysis of the relationship between virtual game reward mechanism and addiction,
+Sustainable Cities and Society,
+Volume 81,
+2022,
+103842,
+ISSN 2210-6707,
+https://doi.org/10.1016/j.scs.2022.103842.
+(https://www.sciencedirect.com/science/article/pii/S221067072200169X)
+Abstract: As of January 2021, nearly 60% of the global population are active internet users, which means that the current social pattern presents an integration of virtual and reality under the rapid progress of urbanization. Current solutions for sustainable cities and society should combined the factors of virtual world in era of Industry 4.0. Multiplayer Online Games (MOGs) are increasingly used as an experimental environment for social science. However, the premise is that there must be enough game players to maintain virtual ecology. Therefore, we use Nova Empire to perform a complexity analysis of the relationship between virtual game reward mechanism and addiction. Specifically, we have tracked 1,800 players for 3 years, which verifies that random reward is easier to cultivate player's habits than fixed reward. Furthermore, we divide the reward into fixed interval schedule, fixed ratio schedule and random schedule. Gaming data of 3,670 players in September 2021 are used for correlation and regression analysis, which perform fine-grained analyses of the significance of different reward on online time in different stages. Finally, a series of suggestions are proposed for policy maker to promote sustainability based on the complexity analysis results and consistency of Nova Empire with real society.
+Keywords: Sustainable society; Complexity analysis; Reward mechanism; Strategy game addiction; Virtual game; Industry 4.0
