@@ -20,7 +20,7 @@ public class Rifle : BaseWeapon
 
     public override void FireWeapon(Transform _fpsCamera)
     {
-        if(rofTimer >= 10/rateOfFire)
+        if(rofTimer >= 10/bulletsPer10Seconds)
         {
             RaycastHit hit;
             //Layer Mask currently just set to team 2
@@ -31,6 +31,10 @@ public class Rifle : BaseWeapon
                 Debug.Log("Rifle Fired");
                 Debug.DrawRay(_fpsCamera.position, _fpsCamera.forward, Color.red,1.0f);
                 Debug.Log(hit.collider.gameObject.name);
+                muzzleFlash.Play();
+                //Animate gun recoil
+                //Muzzle flash
+                //Hit Marker
             }
             rofTimer = 0.0f;
         }

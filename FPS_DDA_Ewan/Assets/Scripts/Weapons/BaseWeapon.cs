@@ -5,6 +5,7 @@ using UnityEngine;
 public class BaseWeapon : MonoBehaviour
 {
     //public int[] recoilArray;
+    public ParticleSystem muzzleFlash;
 
     public int ammo;
     public int magCounter;
@@ -13,7 +14,7 @@ public class BaseWeapon : MonoBehaviour
     public float reloadTimer;
 
     public int damage;
-    public float rateOfFire; // bullets fired per 10 seconds
+    public float bulletsPer10Seconds; // bullets fired per 10 seconds
     public float rofTimer;
     public int weaponPower;
     // Start is called before the first frame update
