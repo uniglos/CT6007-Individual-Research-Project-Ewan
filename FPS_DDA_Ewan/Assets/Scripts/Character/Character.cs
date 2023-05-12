@@ -4,8 +4,18 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    private int health;
-    private float moveSpeed;
+    protected int health;
+    protected float moveSpeed = 10f;
+    protected float jumpHeight = 3f;
+
+    public float gravity = -9.81f;
+    protected Vector3 velocity;
+
+    public Transform groundCheck;
+    public float groundDistance = 0.3f;
+    public LayerMask groundMask;
+    protected bool isGrounded;
+
     public GameObject[] weapons = new GameObject[2];
     protected int score;
     public int scoreDropped;
@@ -28,9 +38,9 @@ public class Character : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public virtual void Update()
     {
-        //Movement
+        CharacterMovement();
         //Aim and Fire
     }
 
@@ -43,5 +53,10 @@ public class Character : MonoBehaviour
     {
         //Perish
         //Give score to player who killed you
+    }
+
+    protected virtual void CharacterMovement()
+    {
+
     }
 }
