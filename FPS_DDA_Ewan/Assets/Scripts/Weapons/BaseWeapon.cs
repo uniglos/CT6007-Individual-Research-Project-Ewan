@@ -13,7 +13,8 @@ public class BaseWeapon : MonoBehaviour
     public float reloadTimer;
 
     public int damage;
-    public int rateOfFire;
+    public float rateOfFire; // bullets fired per 10 seconds
+    public float rofTimer;
     public int weaponPower;
     // Start is called before the first frame update
     void Start()
@@ -22,9 +23,10 @@ public class BaseWeapon : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
-        if(magCounter < magSize && (magCounter <= 0 || Input.GetKeyDown(KeyCode.R)))
+        rofTimer += Time.deltaTime;
+        if (magCounter < magSize && (magCounter <= 0 || Input.GetKeyDown(KeyCode.R)))
         {
             ReloadWeapon();
         }
@@ -32,6 +34,7 @@ public class BaseWeapon : MonoBehaviour
 
     protected void ReloadWeapon()
     {
+        
         if( reloadTimer >= reloadTime)
         {
             magCounter = magSize;
@@ -43,7 +46,7 @@ public class BaseWeapon : MonoBehaviour
         }
     }
 
-    public virtual void FireWeapon()
+    public virtual void FireWeapon(Transform _fpsCamera)
     {
 
     }

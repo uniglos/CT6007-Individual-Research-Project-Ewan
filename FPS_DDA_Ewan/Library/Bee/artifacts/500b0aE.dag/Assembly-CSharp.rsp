@@ -333,6 +333,7 @@
 "Assets/Scripts/Character/PlayerScript.cs"
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Weapons/BaseWeapon.cs"
+"Assets/Scripts/Weapons/Rifle.cs"
 -langversion:9.0
 
 /deterministic

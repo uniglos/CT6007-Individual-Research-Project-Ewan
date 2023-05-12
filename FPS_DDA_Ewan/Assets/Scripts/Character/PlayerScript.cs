@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerScript : Character
 {
     public CharacterController characterController;
+    public Camera playerCamera;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +29,13 @@ public class PlayerScript : Character
 
         characterController.Move(move * moveSpeed * Time.deltaTime);
 
-        if(Input.GetButtonDown("Jump")&& isGrounded)
+        if (Input.GetButtonDown("Fire1"))
+        {
+            Debug.Log("Fired Weapon");
+            weapons[currentWeapon].FireWeapon(playerCamera.transform);
+        }
+
+        if (Input.GetButtonDown("Jump")&& isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }

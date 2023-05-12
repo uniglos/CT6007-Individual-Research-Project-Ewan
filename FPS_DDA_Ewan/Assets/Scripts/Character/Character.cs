@@ -16,7 +16,8 @@ public class Character : MonoBehaviour
     public LayerMask groundMask;
     protected bool isGrounded;
 
-    public GameObject[] weapons = new GameObject[2];
+    public BaseWeapon[] weapons = new BaseWeapon[2];
+    public int currentWeapon = 0;
     //Enumerator for what powerups are active
     protected int score;
     public int scoreDropped;
