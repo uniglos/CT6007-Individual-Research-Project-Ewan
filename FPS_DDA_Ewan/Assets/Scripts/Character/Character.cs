@@ -17,6 +17,7 @@ public class Character : MonoBehaviour
     protected bool isGrounded;
 
     public GameObject[] weapons = new GameObject[2];
+    //Enumerator for what powerups are active
     protected int score;
     public int scoreDropped;
 

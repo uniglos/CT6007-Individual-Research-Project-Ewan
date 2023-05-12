@@ -332,6 +332,7 @@
 "Assets/Scripts/Character/FPSCamera.cs"
 "Assets/Scripts/Character/PlayerScript.cs"
 "Assets/Scripts/GameManager.cs"
+"Assets/Scripts/Weapons/BaseWeapon.cs"
 -langversion:9.0
 
 /deterministic
