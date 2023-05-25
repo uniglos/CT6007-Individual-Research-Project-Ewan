@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PlayerScript : Character
 {
-    public CharacterController characterController;
+    //public CharacterController characterController;
     public Camera playerCamera;
-    // Start is called before the first frame update
-    void Start()
+
+    
+    public override void Start()
     {
-        
+        base.Start();
     }
 
     // Update is called once per frame
@@ -20,33 +21,74 @@ public class PlayerScript : Character
 
     protected override void CharacterMovement()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        if(Input.GetButtonDown("Sprint")&& !isCrouching)
+        {
+            isSprinting = true;
+        }
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+        if(Input.GetButton("Crouch"))
+        {
+            isCrouching = true;
+            this.characterController.height = 1f;
+        }
+        if(Input.GetButtonUp("Crouch"))
+        {
+            isCrouching = false;
+        }
+        else if(!isCrouching)
+        {
+            this.characterController.height = 2.5f;
+        }
 
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
+       
         Vector3 move = transform.right * x + transform.forward * z;
-
-        characterController.Move(move * moveSpeed * Time.deltaTime);
-
-        if (Input.GetButtonDown("Fire1"))
+        if ( z <= 0.5||isCrouching)
         {
-            Debug.Log("Fired Weapon");
-            weapons[currentWeapon].FireWeapon(playerCamera.transform);
+            isSprinting = false;
+        }
+        //Debug.Log(move);
+
+        if (isSprinting)
+        {
+            characterController.Move(move * moveSpeed * 2.5f * Time.deltaTime);
+        }
+        else
+        {
+            characterController.Move(move * moveSpeed * Time.deltaTime);
         }
 
-        if (Input.GetButtonDown("Jump")&& isGrounded)
+        
+
+
+        base.CharacterMovement();
+        //characterController.Move(velocity * Time.deltaTime);
+
+        
+    }
+    protected override void WeaponUpdate()
+    {
+        base.WeaponUpdate();
+        if (weapons[currentWeapon].isAutomatic)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            if (Input.GetButton("Fire1"))
+            {
+                //Debug.Log("Fired Weapon");
+                weapons[currentWeapon].FireWeapon(playerCamera.transform);
+            }
         }
-
-        velocity.y += gravity * Time.deltaTime;
-
-        characterController.Move(velocity * Time.deltaTime);
-
-        if (isGrounded && velocity.y < 0)
+        else
         {
-            velocity.y = -1f;
+            if (Input.GetButtonDown("Fire1"))
+            {
+                //Debug.Log("Fired Weapon");
+                weapons[currentWeapon].FireWeapon(playerCamera.transform);
+            }
         }
     }
 }
