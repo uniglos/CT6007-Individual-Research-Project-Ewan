@@ -7,7 +7,7 @@ public class BaseWeapon : MonoBehaviour
     //public int[] recoilArray;
     public ParticleSystem muzzleFlash;
 
-    private Character owner;
+    protected Character owner;
 
     public bool isAutomatic;
     public int ammo;
@@ -97,7 +97,7 @@ public class BaseWeapon : MonoBehaviour
                 //Debug.Log("Rifle Fired");
                 Debug.DrawRay(_fpsCamera.position, _fpsCamera.forward*10, Color.red, 5.0f);
                 
-                //Debug.Log(hit.collider.gameObject.name);
+                Debug.Log(hit.collider.gameObject.name);
                 if (hit.collider.gameObject.transform.root.GetComponent<Character>() != null)
                 {
                     owner.bulletsHit += 1;

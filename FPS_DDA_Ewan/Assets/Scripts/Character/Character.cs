@@ -33,6 +33,10 @@ public class Character : MonoBehaviour
 
     protected bool isDead = true;
     public bool playerDead => isDead;
+
+    private Color originalCol;
+    private Material defaultMaterial;
+    private float matTimer =0.0f;
     
 
 
@@ -102,12 +106,12 @@ public class Character : MonoBehaviour
     public float navigationEfficacy = 0;
 
     public float combatAssist = 0; //Tracker of how much assistance the player is getting
-    public float speedAssist = 0; //Maximum of +3 speed
-    public float healthAssist = 0; //Damage Resist, maximum resist -15%
+    public float speedAssist = 0; //Increase in movespeed
+    public float healthAssist = 0; //Damage Resistance
     public bool damageBoost = false; //Static Damage boost
     public bool powerUpBoost = false; //Static PowerUp boost
 
-    public float accuracyAssist = 0;
+    public float accuracyAssist = 0; //Increased "bullet" size
 
     public float navigationAssist = 0;
     public float coyoteLimit = 0.5f;
@@ -125,6 +129,13 @@ public class Character : MonoBehaviour
     public virtual void Start()
     {
         reasonForDeath = new Dictionary<string, int>();
+        originalCol = gameObject.GetComponent<Renderer>().material.color;
+        gameObject.TryGetComponent<Renderer>(out Renderer renderer);
+        if(renderer == null)
+        {
+            renderer = gameObject.GetComponentInChildren<Renderer>();
+        }
+        defaultMaterial = renderer.material;
         //Load In LifeData Queue() to lives
         //foreach (LifeData i in lives)
         //{
@@ -169,9 +180,12 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     public virtual void Update()
     {
-        CharacterMovement();
-        //Aim and Fire
-        WeaponUpdate();
+        if (gameObject.GetComponent<EnemyBT>() == null)
+        {
+            CharacterMovement();
+            //Aim and Fire
+            WeaponUpdate();
+        }
         if (isDead)
         {
             gravity = 0;
@@ -194,17 +208,34 @@ public class Character : MonoBehaviour
                 transform.position = GameManager.instance.RespawnPlayer(this.gameObject);
                 Debug.Log("Respawn Point: " + GameManager.instance.RespawnPlayer(this.gameObject));
                 characterController.enabled = true;
+                moveSpeed = moveSpeed + speedAssist;
             }
         }
         else
         {
             timeSpentAlive += Time.deltaTime;
         }
+        DamageFlashUpdate();
+    }
+
+    protected void DamageFlashUpdate()
+    {
+        if(gameObject.GetComponent<Renderer>().material.color == Color.red && matTimer > 0.25f)
+        {
+            gameObject.GetComponent<Renderer>().material.color = originalCol;
+            matTimer = 0;
+        }
+        else
+        {
+            matTimer += Time.deltaTime;
+        }
     }
     public void TakeDamage(int damage, Character attacker)
     {
         if (!isDead)
         {
+            gameObject.GetComponent<Renderer>().material.color = Color.red;
+            matTimer = 0.0f;
             if (!playersFought.Contains(attacker.playerName))
             {
                 playersFought.Add(attacker.playerName);
@@ -213,7 +244,7 @@ public class Character : MonoBehaviour
 
 
             //Take damage equal to damage dealt by a weapon
-            health -= damage;
+            health -= damage-(damage*(int)healthAssist);
 
             attacker.currentLifeData.damageDealt += damage;
             attacker.damageDealt += damage;
@@ -222,6 +253,10 @@ public class Character : MonoBehaviour
             {
                 Die(attacker, "Combat");
             }
+        }
+        if(gameObject.GetComponent<EnemyBT>()!=null)
+        {
+            transform.LookAt(attacker.transform);
         }
     }
 

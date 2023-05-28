@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 //Most of this script is adapted from Brackeys' basic character controller script
 public class PlayerScript : Character
 {
     //public CharacterController characterController;
-    
+
+    public HealthBarPlayer HealthBar;
 
     
     public override void Start()
@@ -17,6 +19,7 @@ public class PlayerScript : Character
     public override void Update()
     {
         base.Update();
+        HealthBar.SetHealth(health);
 
     }
 

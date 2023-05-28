@@ -43,14 +43,20 @@ public class GameManager : MonoBehaviour
             {
                 team1[a] = Instantiate<GameObject>(enemyPrefab);
                 team1[a].gameObject.layer = LayerMask.NameToLayer("Team1");
+                team1[a].gameObject.GetComponent<Renderer>().material.color = Color.blue;
+
             }
+            team1[a].gameObject.GetComponent<Renderer>().material.color = Color.blue;
         }
         for (int a = 0; a < team2.Count; a++)
         {
             if (team2[a] == null)
             {
                 team2[a] = Instantiate<GameObject>(enemyPrefab);
+                team2[a].gameObject.layer = LayerMask.NameToLayer("Team2");
+                team2[a].gameObject.GetComponent<Renderer>().material.color = Color.green;
             }
+            team2[a].gameObject.GetComponent<Renderer>().material.color = Color.green;
         }
         CalculateDDASkew();
     }
@@ -66,6 +72,12 @@ public class GameManager : MonoBehaviour
         self.TryGetComponent<Character>(out Character deadPlayer);
         CalculateNavigationDDA(deadPlayer);
         SpawnPoint bestSpawn = respawnPoints[0];
+        if (deadPlayer.deaths == 0)
+        {
+            bestSpawn = respawnPoints[Random.Range(0, respawnPoints.Length)];
+            return bestSpawn.transform.position;
+        }
+        
         foreach(SpawnPoint r in respawnPoints)
         {
             if(deadPlayer.gameObject.layer == LayerMask.NameToLayer("Team1"))
@@ -105,6 +117,10 @@ public class GameManager : MonoBehaviour
     void CalculateCombatDDA(Character player)
     {
         player.reasonForDeath.TryGetValue("Combat", out int combatDeaths);
+        if(combatDeaths==0)
+        {
+            combatDeaths = 1;
+        }
         player.avgDamageDealtPerLife = player.damageDealt / combatDeaths;
         player.avgDamageTakenPerLife = player.damageTaken / combatDeaths;
 
@@ -124,9 +140,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log(normalised);
 
-        player.healthAssist = normalised.x;
-        player.speedAssist = normalised.y;
-        player.accuracyAssist = normalised.z;
+        player.healthAssist = normalised.x * assistBudget;
+        player.speedAssist = normalised.y * assistBudget;
+        player.accuracyAssist = normalised.z * assistBudget;
+        
     }
 
     void CalculateNavigationDDA(Character player)
@@ -149,7 +166,7 @@ public class GameManager : MonoBehaviour
 
             //If you spend a long time not fighting anyone
             //The game will spawn you closer to enemies and allies
-            player.spawnKindness = player.previousLifeSpan / player.avgDamageDealtPerLife;
+            //player.spawnKindness = player.previousLifeSpan / player.avgDamageDealtPerLife;
         }
     }
 

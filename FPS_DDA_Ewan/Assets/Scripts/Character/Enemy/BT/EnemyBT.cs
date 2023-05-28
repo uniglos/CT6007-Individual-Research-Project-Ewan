@@ -26,6 +26,14 @@ public class EnemyBT : BTree
         {
             agent.speed = self.moveSpeed;
         }
+        if(isDead)
+        {
+            agent.enabled = false;
+        }
+        else
+        {
+            agent.enabled = true;
+        }
     }
     protected override BTNode SetupTree()
     {

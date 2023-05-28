@@ -17,11 +17,13 @@ namespace BehaviourTree
 
         public override void Start()
         {
+            base.Start();
             _root = SetupTree();
         }
 
         public override void Update()
         {
+            base.Update();
             if (_root != null)
                 _root.Evaluate();
         }
