@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3876310351514651425}
   m_Layer: 6
-  m_Name: WeaponHoldPos
+  m_Name: GunPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3876310351514651424}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.205, y: -0.2619999, z: 0.7}
+  m_LocalPosition: {x: 0.2, y: -0.25, z: 0.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 3876310351989799165}
   - component: {fileID: 3876310351989799164}
   - component: {fileID: 3876310351989799106}
+  - component: {fileID: 5730817385174855589}
   m_Layer: 6
   m_Name: FirstPersonCharacter
   m_TagString: Untagged
@@ -131,6 +132,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterController: {fileID: 3876310351989799164}
   health: 100
+  moveSpeed: 10
+  jumpHeight: 3
   gravity: -9.81
   groundCheck: {fileID: 3876310350989392672}
   groundDistance: 0.3
@@ -141,10 +144,55 @@ MonoBehaviour:
   - {fileID: 3755354718745854231}
   - {fileID: 0}
   currentWeapon: 0
+  gunPoint: {fileID: 3876310352074772875}
   score: 0
   scoreDropped: 0
   playerName: Jeff
-  playerCamera: {fileID: 3876310352074772874}
+  kills: 0
+  killsPerLife: 0
+  damageDealt: 0
+  avgDamageDealtPerLife: 0
+  damageTaken: 0
+  avgDamageTakenPerLife: 0
+  deaths: 0
+  assists: 0
+  distanceTravelled: 0
+  spawnPoint: {fileID: 0}
+  timeSpentAlive: 0
+  playersFought: []
+  playersEncountered: 0
+  bulletsFired: 0
+  bulletsHit: 0
+  accuracy: 0
+  combatEfficacy: 0
+  accuracyEfficacy: 0
+  navigationEfficacy: 0
+  combatAssist: 0
+  accuracyAssist: 0
+  navigationAssist: 0
+  assistance: 0
+--- !u!114 &5730817385174855589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3876310351989799167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112e1e54767f65a4b83d7e3d19e8e6a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewRadius: 30
+  viewAngle: 20
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  visibleTargets: []
+  primaryTarget: {fileID: 0}
 --- !u!1 &3876310352074772868
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,7 +206,7 @@ GameObject:
   - component: {fileID: 3876310352074772869}
   - component: {fileID: 3876310352074772872}
   m_Layer: 6
-  m_Name: Main Camera
+  m_Name: FPSCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +220,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3876310352074772868}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.629, z: 0}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

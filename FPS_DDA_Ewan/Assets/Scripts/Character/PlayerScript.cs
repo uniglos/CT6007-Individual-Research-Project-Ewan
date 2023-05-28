@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//Most of this script is adapted from Brackeys' basic character controller script
 public class PlayerScript : Character
 {
     //public CharacterController characterController;
-    public Camera playerCamera;
+    
 
     
     public override void Start()
@@ -28,6 +28,7 @@ public class PlayerScript : Character
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            isGrounded = false;
         }
         if(Input.GetButton("Crouch"))
         {
@@ -79,7 +80,7 @@ public class PlayerScript : Character
             if (Input.GetButton("Fire1"))
             {
                 //Debug.Log("Fired Weapon");
-                weapons[currentWeapon].FireWeapon(playerCamera.transform);
+                weapons[currentWeapon].FireWeapon(gunPoint);
             }
         }
         else
@@ -87,8 +88,13 @@ public class PlayerScript : Character
             if (Input.GetButtonDown("Fire1"))
             {
                 //Debug.Log("Fired Weapon");
-                weapons[currentWeapon].FireWeapon(playerCamera.transform);
+                weapons[currentWeapon].FireWeapon(gunPoint);
             }
         }
+    }
+
+    void BulletMagnetism()
+    {
+
     }
 }

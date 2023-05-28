@@ -53,10 +53,36 @@ public class GameManager : MonoBehaviour
 
     public void RespawnPlayer(Character deadPlayer)
     {
-        CalculateDDASkew();
+        //Alter DDA in accordance to how well the player performed in their previous life
+        //Combat DDA
+        #region Combat DDA
+        //How many kills the player got before they died, divided by how much DDA they were getting
+        float DDAcombat = deadPlayer.killsPerLife / deadPlayer.combatAssist;
+        deadPlayer.combatEfficacy += DDAcombat + (deadPlayer.kills / deadPlayer.deaths);
+
+        //Increase assistance by how poorly the player has been performing over the game
+        //Deaths and efficacy track these
+        deadPlayer.combatAssist = deadPlayer.deaths - deadPlayer.combatEfficacy;
+
+        if (deadPlayer.combatAssist < 0) deadPlayer.combatAssist = 0;
+        if (deadPlayer.navigationAssist < 0) deadPlayer.navigationAssist = 0;
+        if (deadPlayer.accuracyAssist < 0) deadPlayer.accuracyAssist = 0;
+
+        deadPlayer.deaths += 1;
+        deadPlayer.killsPerLife = 0;
+        #endregion
+
+        #region Navigation DDA
+
+        #endregion
+        #region Accuracy DDA
+        #endregion
+
+
         //Move the character to a respawn point
         //Make them alive again.
-        //Possibly apply DDA
+        deadPlayer.assistance = deadPlayer.combatAssist + deadPlayer.navigationAssist + deadPlayer.accuracyAssist;
+        CalculateDDASkew();
     }
 
     private void CalculateDDASkew()
