@@ -9,8 +9,6 @@ public class Rifle : BaseWeapon
     {
         isAutomatic = true;
         layermask = LayerMask.GetMask("Ground", "Team1", "Team2");
-        Debug.Log(layermask.value);
-        Debug.Log(this.transform.root.gameObject.layer.ToString());
     }
 
     // Update is called once per frame

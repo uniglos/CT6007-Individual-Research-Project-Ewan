@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
             if (team1[a] == null)
             {
                 team1[a] = Instantiate<GameObject>(enemyPrefab);
+                team1[a].gameObject.layer = LayerMask.NameToLayer("Team1");
             }
         }
         for (int a = 0; a < team2.Count; a++)
@@ -60,8 +61,9 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void RespawnPlayer(Character deadPlayer)
+    public Vector3 RespawnPlayer(GameObject self)
     {
+        self.TryGetComponent<Character>(out Character deadPlayer);
         CalculateNavigationDDA(deadPlayer);
         SpawnPoint bestSpawn = respawnPoints[0];
         foreach(SpawnPoint r in respawnPoints)
@@ -81,7 +83,10 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        deadPlayer.transform.position = bestSpawn.transform.position;
+        //Debug.Log(deadPlayer.transform.position);
+        //self.transform.position = bestSpawn.transform.position;
+        //Debug.Log(deadPlayer.transform.position);
+        //Debug.Log(bestSpawn.transform.position);
         //Alter DDA in accordance to how well the player performed in their previous life  
         CalculateCombatDDA(deadPlayer);
         
@@ -94,11 +99,12 @@ public class GameManager : MonoBehaviour
         //Make them alive again.
         deadPlayer.assistance = deadPlayer.combatAssist + deadPlayer.navigationAssist + deadPlayer.accuracyAssist;
         CalculateDDASkew();
+        return bestSpawn.transform.position;
     }
 
     void CalculateCombatDDA(Character player)
     {
-        int combatDeaths = player.reasonForDeath["Combat"];
+        player.reasonForDeath.TryGetValue("Combat", out int combatDeaths);
         player.avgDamageDealtPerLife = player.damageDealt / combatDeaths;
         player.avgDamageTakenPerLife = player.damageTaken / combatDeaths;
 

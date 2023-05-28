@@ -112,8 +112,9 @@ public class Character : MonoBehaviour
     public float navigationAssist = 0;
     public float coyoteLimit = 0.5f;
     public float coyoteTimer = 0;
-    private float respawnTimer;
-    public float respawnLimit;
+    protected bool canJump;
+    protected float respawnTimer;
+    public float respawnLimit = 4.0f;
     public float spawnKindness;
 
     public float assistance;
@@ -125,26 +126,26 @@ public class Character : MonoBehaviour
     {
         reasonForDeath = new Dictionary<string, int>();
         //Load In LifeData Queue() to lives
-        foreach (LifeData i in lives)
-        {
-            kills += i.kills;
-            damageDealt += i.damageDealt;
-            damageTaken += i.damageTaken;
-            accuracy += i.accuracy;
-            distanceTravelled += i.distanceTravelled;
-            timeSpentAlive += i.timeSpentAlive;
-            //playersFought.Add(i.playersFought);
-            playersEncountered += i.playersEncountered;
-            if (reasonForDeath.ContainsKey(i.deathCause))
-            {
-                reasonForDeath[i.deathCause] += 1;
-            }
-            deaths += 1;
-        }
-        killDeathRatio = kills / deaths;
-        avgDamageDealtPerLife = damageDealt / deaths;
-        avgDamageTakenPerLife = damageTaken / deaths;
-        accuracy = accuracy / deaths;
+        //foreach (LifeData i in lives)
+        //{
+        //    kills += i.kills;
+        //    damageDealt += i.damageDealt;
+        //    damageTaken += i.damageTaken;
+        //    accuracy += i.accuracy;
+        //    distanceTravelled += i.distanceTravelled;
+        //    timeSpentAlive += i.timeSpentAlive;
+        //    //playersFought.Add(i.playersFought);
+        //    playersEncountered += i.playersEncountered;
+        //    if (reasonForDeath.ContainsKey(i.deathCause))
+        //    {
+        //        reasonForDeath[i.deathCause] += 1;
+        //    }
+        //    deaths += 1;
+        //}
+        //killDeathRatio = kills / deaths;
+        //avgDamageDealtPerLife = damageDealt / deaths;
+        //avgDamageTakenPerLife = damageTaken / deaths;
+        //accuracy = accuracy / deaths;
 
 
 
@@ -173,6 +174,9 @@ public class Character : MonoBehaviour
         WeaponUpdate();
         if (isDead)
         {
+            gravity = 0;
+            velocity.y = 0;
+            characterController.enabled = false;
             gameObject.transform.position = GameManager.instance.transform.position;
             previousLifeSpan = timeSpentAlive;
             timeSpentAlive = 0;
@@ -182,10 +186,14 @@ public class Character : MonoBehaviour
             }
             else
             {
+                gravity = -9.81f;
+                health = 100;
+                isDead = false;
                 respawnTimer = 0.0f;
                 respawnLimit = 4.0f;
-                isDead = false;
-                GameManager.instance.RespawnPlayer(this);
+                transform.position = GameManager.instance.RespawnPlayer(this.gameObject);
+                Debug.Log("Respawn Point: " + GameManager.instance.RespawnPlayer(this.gameObject));
+                characterController.enabled = true;
             }
         }
         else
@@ -217,10 +225,11 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void Die(Character killer, string causeForDeath)
+    public void Die(Character killer, string causeForDeath = "Unknown")
     {
         //Perish
         isDead = true;
+        
         deaths += 1;
         causeOfLastDeath = causeForDeath;
         if (killer != null)
@@ -248,27 +257,35 @@ public class Character : MonoBehaviour
             reasonForDeath[causeForDeath] += 1;
 
         }
-        lives.Enqueue(currentLifeData);
+        //lives.Enqueue(currentLifeData);
     }
 
     protected virtual void CharacterMovement()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        if (coyoteTimer <= coyoteLimit && !Physics.CheckSphere(groundCheck.position, groundDistance, groundMask))
+        if (coyoteTimer <= coyoteLimit && canJump)
         {
             coyoteTimer += Time.deltaTime;
-
         }
         else
         {
-            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-            coyoteTimer = 0;
+            canJump = false;
         }
+        if (isGrounded)
+        {
+            coyoteTimer = 0;
+            canJump = true;
+        }
+        
+        
+        
         velocity.y += gravity * Time.deltaTime;
 
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -1f;
+            canJump = true;
         }
 
         characterController.Move(velocity * Time.deltaTime);

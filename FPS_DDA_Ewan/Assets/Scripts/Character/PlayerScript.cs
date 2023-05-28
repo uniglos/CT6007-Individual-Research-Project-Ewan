@@ -17,20 +17,30 @@ public class PlayerScript : Character
     public override void Update()
     {
         base.Update();
+
     }
 
     protected override void CharacterMovement()
     {
-        if(Input.GetButtonDown("Sprint")&& !isCrouching)
+        
+        if (Input.GetButtonDown("Sprint")&& !isCrouching)
         {
             isSprinting = true;
         }
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && canJump)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            canJump = false;
             isGrounded = false;
+            coyoteTimer = coyoteLimit;
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
-        if(Input.GetButton("Crouch"))
+        if (Input.GetButtonUp("Jump"))
+        {
+            canJump = false;
+            isGrounded = false;
+            coyoteTimer = coyoteLimit;
+        }
+            if (Input.GetButton("Crouch"))
         {
             isCrouching = true;
             this.characterController.height = 1f;
@@ -64,13 +74,13 @@ public class PlayerScript : Character
             characterController.Move(move * moveSpeed * Time.deltaTime);
         }
 
-        
+
 
 
         base.CharacterMovement();
         //characterController.Move(velocity * Time.deltaTime);
 
-        
+
     }
     protected override void WeaponUpdate()
     {

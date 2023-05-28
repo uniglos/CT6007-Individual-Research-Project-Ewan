@@ -18,7 +18,6 @@ namespace BehaviourTree
         public override void Start()
         {
             _root = SetupTree();
-            Debug.Log("Ran");
         }
 
         public override void Update()

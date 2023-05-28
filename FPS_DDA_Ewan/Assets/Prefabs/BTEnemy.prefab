@@ -268,7 +268,7 @@ MonoBehaviour:
   navigationAssist: 0
   coyoteLimit: 0.5
   coyoteTimer: 0
-  respawnLimit: 0
+  respawnLimit: 4
   spawnKindness: 0
   assistance: 0
   self: {fileID: 0}

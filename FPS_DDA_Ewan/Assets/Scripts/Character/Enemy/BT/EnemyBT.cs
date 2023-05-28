@@ -22,7 +22,6 @@ public class EnemyBT : BTree
     public override void Update()
     {
         base.Update();
-        Debug.Log(self);
         if(self.moveSpeed != agent.speed)
         {
             agent.speed = self.moveSpeed;

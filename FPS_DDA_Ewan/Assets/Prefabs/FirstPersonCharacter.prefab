@@ -111,7 +111,7 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2.5
+  m_Height: 2.1
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.6
@@ -160,6 +160,7 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   timeSpentAlive: 0
   previousLifeSpan: 0
+  causeOfLastDeath: 
   playersFought: []
   playersEncountered: 0
   bulletsFired: 0
@@ -178,7 +179,7 @@ MonoBehaviour:
   navigationAssist: 0
   coyoteLimit: 0.5
   coyoteTimer: 0
-  respawnTimer: 0
+  respawnLimit: 4
   spawnKindness: 0
   assistance: 0
 --- !u!114 &5730817385174855589

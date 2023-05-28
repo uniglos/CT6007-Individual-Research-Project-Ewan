@@ -94,10 +94,10 @@ public class BaseWeapon : MonoBehaviour
             //Sphere Cast with its radius directly tied to Accuracy Assist will increase leniency of bullets hit box
             if (Physics.SphereCast(_fpsCamera.position, maxBulletMagnetism * owner.accuracyAssist, appliedDeviance, out hit, Mathf.Infinity, layermask))
             {
-                Debug.Log("Rifle Fired");
+                //Debug.Log("Rifle Fired");
                 Debug.DrawRay(_fpsCamera.position, _fpsCamera.forward*10, Color.red, 5.0f);
                 
-                Debug.Log(hit.collider.gameObject.name);
+                //Debug.Log(hit.collider.gameObject.name);
                 if (hit.collider.gameObject.transform.root.GetComponent<Character>() != null)
                 {
                     owner.bulletsHit += 1;

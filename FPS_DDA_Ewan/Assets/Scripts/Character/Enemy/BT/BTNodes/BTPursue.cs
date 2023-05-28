@@ -34,12 +34,12 @@ public class BTPursue : BTNode
             timer += Time.deltaTime;
             agent.SetDestination(t.position + ((agent.transform.position - t.position).normalized * agent.stoppingDistance));
 
-            Debug.Log("Pursuing Enemy");
+            //Debug.Log("Pursuing Enemy");
             if (timer > 2.0f)
             {
                 agent.SetDestination(t.position + ((agent.transform.position - t.position).normalized * agent.stoppingDistance));
 
-                Debug.Log("Lost Enemy");
+                //Debug.Log("Lost Enemy");
                 parent.ClearData("target");
                 t = null;
                 self.GetComponent<FieldOfView>().visibleTargets.Remove(t);
@@ -51,7 +51,7 @@ public class BTPursue : BTNode
 
             if (self.GetComponent<FieldOfView>().visibleTargets.Contains(t))
             {
-                Debug.Log("Found Enemy");
+                //Debug.Log("Found Enemy");
                 parent.SetData("enemy", self.GetComponent<FieldOfView>().primaryTarget);
                 state = NodeState.SUCCESS;
                 return state;
