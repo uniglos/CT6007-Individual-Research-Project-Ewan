@@ -8,11 +8,12 @@ using BehaviourTree;
 //Adapted from Mina Pêcheux's video on YouTube
 public class EnemyBT : BTree
 {
-    public static Character self;
-    public static NavMeshAgent agent;
+    public Character self;
+    public NavMeshAgent agent;
 
     private void Awake()
     {
+        
         self = this.gameObject.GetComponent<Character>();
         agent = this.gameObject.GetComponent<NavMeshAgent>();
         agent.stoppingDistance = 3;
@@ -21,6 +22,7 @@ public class EnemyBT : BTree
     public override void Update()
     {
         base.Update();
+        Debug.Log(self);
         if(self.moveSpeed != agent.speed)
         {
             agent.speed = self.moveSpeed;
@@ -33,12 +35,12 @@ public class EnemyBT : BTree
             new Sequence(new List<BTNode> 
             {
                 //Pursue enemy if you have one
-                new BTHaveTarget(),
-                new BTPursue(),
-                new BTShoot(),
+                new BTHaveTarget(self),
+                new BTPursue(self,agent),
+                new BTShoot(self),
                 /*new BTStrafe()*/
             }),
-            new BTWander(30, 3.0f)
+            new BTWander(30, 3.0f,agent)
         }); 
         //Shoot player
         //Strafe Player

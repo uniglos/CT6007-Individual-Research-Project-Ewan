@@ -8,6 +8,7 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     protected int health = 100;
+    public int Health => health;
     public float moveSpeed = 10f;
     protected bool isSprinting = false;
     protected bool isCrouching = false;
@@ -30,9 +31,9 @@ public class Character : MonoBehaviour
 
     public string playerName;
 
-    protected bool isDead;
+    protected bool isDead = true;
     public bool playerDead => isDead;
-    private float respawnTimer;
+    
 
 
 
@@ -59,19 +60,23 @@ public class Character : MonoBehaviour
                 */
 
     public int kills;
-    public int killsPerLife;
+    public int killDeathRatio;
+    public int deaths;
     public float damageDealt;
     public float avgDamageDealtPerLife;
-    public float damageTaken = 0;
+    public float damageTaken;
     public float avgDamageTakenPerLife;
-    public int deaths;
+    
     public int assists;
 
     public LifeData currentLifeData;
+    public Queue<LifeData> lives; //Save Load System
 
     public float distanceTravelled;
     public GameObject spawnPoint;
     public float timeSpentAlive;
+    public float previousLifeSpan;
+    public string causeOfLastDeath;
 
     public List<string> playersFought;
     public int playersEncountered;
@@ -80,22 +85,36 @@ public class Character : MonoBehaviour
     public int bulletsFired;
     public int bulletsHit;
     public float accuracy;
+    public float avgAccuracy;
 
-    public Dictionary<string, int> reasonForDeath;   //When a player dies, the reason will be passed through to the game manager.
+    public Dictionary<string, int> reasonForDeath = new Dictionary<string, int>();   //When a player dies, the reason will be passed through to the game manager.
 
     /* These are the values that will be used to track and apply DDA
      * expected efficacy is how well we expect the player to do (SBMM)
      * efficacy is how well the player is doing in-game
      * assistance is how much DDA the player is benefitting from    */
-    protected float expectedEfficacy;
+    protected float expectedCmbtEff;
+    protected float expectedAccEff;
+    protected float expectedNavEff;
+
     public float combatEfficacy = 0;
     public float accuracyEfficacy = 0;
     public float navigationEfficacy = 0;
-    public float combatAssist = 0;
+
+    public float combatAssist = 0; //Tracker of how much assistance the player is getting
+    public float speedAssist = 0; //Maximum of +3 speed
+    public float healthAssist = 0; //Damage Resist, maximum resist -15%
+    public bool damageBoost = false; //Static Damage boost
+    public bool powerUpBoost = false; //Static PowerUp boost
+
     public float accuracyAssist = 0;
+
     public float navigationAssist = 0;
-    public float coyoteLimit = 0;
+    public float coyoteLimit = 0.5f;
     public float coyoteTimer = 0;
+    private float respawnTimer;
+    public float respawnLimit;
+    public float spawnKindness;
 
     public float assistance;
 
@@ -104,11 +123,46 @@ public class Character : MonoBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
+        reasonForDeath = new Dictionary<string, int>();
+        //Load In LifeData Queue() to lives
+        foreach (LifeData i in lives)
+        {
+            kills += i.kills;
+            damageDealt += i.damageDealt;
+            damageTaken += i.damageTaken;
+            accuracy += i.accuracy;
+            distanceTravelled += i.distanceTravelled;
+            timeSpentAlive += i.timeSpentAlive;
+            //playersFought.Add(i.playersFought);
+            playersEncountered += i.playersEncountered;
+            if (reasonForDeath.ContainsKey(i.deathCause))
+            {
+                reasonForDeath[i.deathCause] += 1;
+            }
+            deaths += 1;
+        }
+        killDeathRatio = kills / deaths;
+        avgDamageDealtPerLife = damageDealt / deaths;
+        avgDamageTakenPerLife = damageTaken / deaths;
+        accuracy = accuracy / deaths;
+
+
+
         health = 100;
         if (gameObject.GetComponent<EnemyBT>())
         {
             playerName = "Name";
         }
+
+        kills = 0;
+        damageDealt = 0;
+        damageTaken = 0;
+        accuracy = 0;
+        distanceTravelled = 0;
+        timeSpentAlive = 0;
+        //playersFought.Add(i.playersFought);
+        playersEncountered = 0;
+        deaths = 0;
     }
 
     // Update is called once per frame
@@ -119,53 +173,72 @@ public class Character : MonoBehaviour
         WeaponUpdate();
         if (isDead)
         {
-            if (respawnTimer <= 4.0f)
+            gameObject.transform.position = GameManager.instance.transform.position;
+            previousLifeSpan = timeSpentAlive;
+            timeSpentAlive = 0;
+            if (respawnTimer <= respawnLimit)
             {
                 respawnTimer += Time.deltaTime;
             }
             else
             {
                 respawnTimer = 0.0f;
-                //isDead = false;
-                //GameManager.instance.RespawnPlayer(this);
+                respawnLimit = 4.0f;
+                isDead = false;
+                GameManager.instance.RespawnPlayer(this);
             }
         }
+        else
+        {
+            timeSpentAlive += Time.deltaTime;
+        }
     }
-
     public void TakeDamage(int damage, Character attacker)
     {
-        if (!playersFought.Contains(attacker.playerName))
+        if (!isDead)
         {
-            playersFought.Add(attacker.playerName);
-            playersEncountered += 1;
-        }
+            if (!playersFought.Contains(attacker.playerName))
+            {
+                playersFought.Add(attacker.playerName);
+                playersEncountered += 1;
+            }
 
 
-        //Take damage equal to damage dealt by a weapon
-        health -= damage;
+            //Take damage equal to damage dealt by a weapon
+            health -= damage;
 
-        attacker.damageDealt += damage;
-        damageTaken += damage;
-        if (health <= 0)
-        {
-            Die(attacker, attacker.playerName);
+            attacker.currentLifeData.damageDealt += damage;
+            attacker.damageDealt += damage;
+            currentLifeData.damageTaken += damage;
+            if (health <= 0)
+            {
+                Die(attacker, "Combat");
+            }
         }
     }
 
     public void Die(Character killer, string causeForDeath)
     {
         //Perish
-        //Give score to player who killed you
-        killer.score += scoreDropped;
         isDead = true;
-
-        //Alter killers stats
-        killer.kills += 1;
-        killer.killsPerLife += 1;
-        if (killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Contains(this.transform))
+        deaths += 1;
+        causeOfLastDeath = causeForDeath;
+        if (killer != null)
         {
-            killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Remove(this.transform);
+            //Give score to player who killed you
+            killer.score += scoreDropped;
+            
+
+            //Alter killers stats
+            killer.currentLifeData.kills += 1;
+            //killer.avgkillsPerLife += 1;
+            if (killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Contains(this.transform))
+            {
+                killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Remove(this.transform);
+            }
         }
+        Debug.Log(causeForDeath);
+        Debug.Log(reasonForDeath);
         if (!reasonForDeath.ContainsKey(causeForDeath))
         {
             reasonForDeath.Add(causeForDeath, 1);
@@ -175,6 +248,7 @@ public class Character : MonoBehaviour
             reasonForDeath[causeForDeath] += 1;
 
         }
+        lives.Enqueue(currentLifeData);
     }
 
     protected virtual void CharacterMovement()
@@ -200,6 +274,12 @@ public class Character : MonoBehaviour
         characterController.Move(velocity * Time.deltaTime);
     }
 
+    public void CalculateAverages(Character player)
+    {
+        player.avgDamageDealtPerLife = player.damageDealt / player.deaths;
+        player.avgDamageTakenPerLife = player.damageTaken / player.deaths;
+    }
+
     protected virtual void WeaponUpdate()
     {
 
@@ -208,13 +288,23 @@ public class Character : MonoBehaviour
     public struct LifeData
     {
         public int kills;
-        public int killsPerLife;
+
+        public float accuracy;
+
         public float damageDealt;
-        public float avgDamageDealtPerLife;
+
         public float damageTaken;
-        public float avgDamageTakenPerLife;
-        public int deaths;
+
         public int assists;
+
+        public float distanceTravelled;
+
+        public float timeSpentAlive;
+
+        public List<string> playersFought;
+        public int playersEncountered;
+
+        public string deathCause;
     }
 
 }

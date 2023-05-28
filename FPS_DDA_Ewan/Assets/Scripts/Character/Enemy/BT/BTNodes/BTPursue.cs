@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BehaviourTree;
+using UnityEngine.AI;
 
 public class BTPursue : BTNode
 {
@@ -10,9 +11,14 @@ public class BTPursue : BTNode
 
     private float timer;
 
-    public BTPursue()
+    private Character self;
+    private NavMeshAgent agent;
+
+    public BTPursue(Character _self, NavMeshAgent _agent)
     {
         t = null;
+        agent = _agent;
+        self = _self;
     }
 
     public override NodeState Evaluate()
@@ -26,27 +32,27 @@ public class BTPursue : BTNode
         if(t != null)
         {
             timer += Time.deltaTime;
-            EnemyBT.agent.SetDestination(t.position + ((EnemyBT.agent.transform.position - t.position).normalized * EnemyBT.agent.stoppingDistance));
+            agent.SetDestination(t.position + ((agent.transform.position - t.position).normalized * agent.stoppingDistance));
 
             Debug.Log("Pursuing Enemy");
             if (timer > 2.0f)
             {
-                EnemyBT.agent.SetDestination(t.position + ((EnemyBT.agent.transform.position - t.position).normalized * EnemyBT.agent.stoppingDistance));
+                agent.SetDestination(t.position + ((agent.transform.position - t.position).normalized * agent.stoppingDistance));
 
                 Debug.Log("Lost Enemy");
                 parent.ClearData("target");
                 t = null;
-                EnemyBT.self.GetComponent<FieldOfView>().visibleTargets.Remove(t);
-                EnemyBT.self.GetComponent<FieldOfView>().primaryTarget = null;
+                self.GetComponent<FieldOfView>().visibleTargets.Remove(t);
+                self.GetComponent<FieldOfView>().primaryTarget = null;
                 state = NodeState.FAILURE;
                 timer = 0;
                 return state;
             }
 
-            if (EnemyBT.self.GetComponent<FieldOfView>().visibleTargets.Contains(t))
+            if (self.GetComponent<FieldOfView>().visibleTargets.Contains(t))
             {
                 Debug.Log("Found Enemy");
-                parent.SetData("enemy", EnemyBT.self.GetComponent<FieldOfView>().primaryTarget);
+                parent.SetData("enemy", self.GetComponent<FieldOfView>().primaryTarget);
                 state = NodeState.SUCCESS;
                 return state;
             }

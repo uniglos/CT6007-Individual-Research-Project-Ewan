@@ -7,20 +7,22 @@ public class BTHaveTarget : BTNode
 {
     private List<Transform> visibleTargets;
 
-    public BTHaveTarget()
+    private Character self;
+
+    public BTHaveTarget(Character _self)
     {
-        
+        self = _self;
     }
 
     public override NodeState Evaluate()
     {
-        if(EnemyBT.self.GetComponent<FieldOfView>().visibleTargets.Count >0)
+        if(self.GetComponent<FieldOfView>().visibleTargets.Count >0)
         {
             state = NodeState.SUCCESS;
             Debug.Log("Have Target");
-            parent.SetData("target", EnemyBT.self.GetComponent<FieldOfView>().visibleTargets[0]);
-            EnemyBT.self.GetComponent<FieldOfView>().primaryTarget = 
-                EnemyBT.self.GetComponent<FieldOfView>().visibleTargets[0].gameObject.GetComponent<Character>();
+            parent.SetData("target", self.GetComponent<FieldOfView>().visibleTargets[0]);
+            self.GetComponent<FieldOfView>().primaryTarget = 
+                self.GetComponent<FieldOfView>().visibleTargets[0].gameObject.GetComponent<Character>();
         }
         else
         {

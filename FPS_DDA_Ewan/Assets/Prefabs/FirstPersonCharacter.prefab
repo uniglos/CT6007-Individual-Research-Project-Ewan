@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 5730817385174855589}
   m_Layer: 6
   m_Name: FirstPersonCharacter
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149,27 +149,37 @@ MonoBehaviour:
   scoreDropped: 0
   playerName: Jeff
   kills: 0
-  killsPerLife: 0
+  killDeathRatio: 0
+  deaths: 0
   damageDealt: 0
   avgDamageDealtPerLife: 0
   damageTaken: 0
   avgDamageTakenPerLife: 0
-  deaths: 0
   assists: 0
   distanceTravelled: 0
   spawnPoint: {fileID: 0}
   timeSpentAlive: 0
+  previousLifeSpan: 0
   playersFought: []
   playersEncountered: 0
   bulletsFired: 0
   bulletsHit: 0
   accuracy: 0
+  avgAccuracy: 0
   combatEfficacy: 0
   accuracyEfficacy: 0
   navigationEfficacy: 0
   combatAssist: 0
+  speedAssist: 0
+  healthAssist: 0
+  damageBoost: 0
+  powerUpBoost: 0
   accuracyAssist: 0
   navigationAssist: 0
+  coyoteLimit: 0.5
+  coyoteTimer: 0
+  respawnTimer: 0
+  spawnKindness: 0
   assistance: 0
 --- !u!114 &5730817385174855589
 MonoBehaviour:

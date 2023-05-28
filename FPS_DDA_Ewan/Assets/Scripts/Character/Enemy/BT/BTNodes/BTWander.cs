@@ -9,13 +9,16 @@ public class BTWander : BTNode
     public float wanderTimer;
 
     private Transform target;
+
+    private NavMeshAgent agent;
     
     private float timer;
 
-    public BTWander(float _wanderRadius, float _wanderTimer)
+    public BTWander(float _wanderRadius, float _wanderTimer, NavMeshAgent _agent)
     {
         wanderRadius = _wanderRadius;
         wanderTimer = _wanderTimer;
+        agent = _agent;
     }
     public override NodeState Evaluate()
     {
@@ -23,8 +26,8 @@ public class BTWander : BTNode
 
         if (timer >= wanderTimer)
         {
-            Vector3 newPos = RandomNavSphere(EnemyBT.agent.transform.position, wanderRadius, -1);
-            EnemyBT.agent.SetDestination(newPos);
+            Vector3 newPos = RandomNavSphere(agent.transform.position, wanderRadius, -1);
+            agent.SetDestination(newPos);
             timer = 0;
         }
 

@@ -44,7 +44,8 @@ public class FieldOfView : MonoBehaviour
                 if(!Physics.Raycast(transform.position, dirToTarget, dstToTarget,obstacleMask))
                 {
                     if (target.GetComponent<Character>()&&target.GetComponent<Character>() != this.transform.GetComponent<Character>()
-                        && !visibleTargets.Contains(target) && !target.GetComponent<Character>().playerDead)
+                        && !visibleTargets.Contains(target) && !target.GetComponent<Character>().playerDead 
+                        && target.gameObject.layer!=this.gameObject.layer)
                     {
                         visibleTargets.Add(target);
                     }

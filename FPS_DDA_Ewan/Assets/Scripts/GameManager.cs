@@ -5,12 +5,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public GameObject[] team1 = new GameObject[3];
-    public GameObject[] team2 = new GameObject[3];
+    public GameObject enemyPrefab;
+    public List<GameObject> team1;
+    public List<GameObject> team2;
     public int team1Score;
     public int team2Score;
 
-    public GameObject[] respawnPoints;
+    public float navDeathMinRatio = 0.25f;
+    public SpawnPoint[] respawnPoints;
+
 
     //This will be the overall skew of the game's DDA
     //Comparing the success of individual players on each team
@@ -34,15 +37,21 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
+        for(int a=0; a < team1.Count;a++)
+        {
+            if (team1[a] == null)
+            {
+                team1[a] = Instantiate<GameObject>(enemyPrefab);
+            }
+        }
+        for (int a = 0; a < team2.Count; a++)
+        {
+            if (team2[a] == null)
+            {
+                team2[a] = Instantiate<GameObject>(enemyPrefab);
+            }
+        }
         CalculateDDASkew();
-        foreach(var a in team1)
-        {
-            a.gameObject.layer = 6;
-        }
-        foreach (var a in team2)
-        {
-            a.gameObject.layer = 7;
-        }
     }
 
     // Update is called once per frame
@@ -53,36 +62,89 @@ public class GameManager : MonoBehaviour
 
     public void RespawnPlayer(Character deadPlayer)
     {
-        //Alter DDA in accordance to how well the player performed in their previous life
-        //Combat DDA
-        #region Combat DDA
-        //How many kills the player got before they died, divided by how much DDA they were getting
-        float DDAcombat = deadPlayer.killsPerLife / deadPlayer.combatAssist;
-        deadPlayer.combatEfficacy += DDAcombat + (deadPlayer.kills / deadPlayer.deaths);
-
-        //Increase assistance by how poorly the player has been performing over the game
-        //Deaths and efficacy track these
-        deadPlayer.combatAssist = deadPlayer.deaths - deadPlayer.combatEfficacy;
+        CalculateNavigationDDA(deadPlayer);
+        SpawnPoint bestSpawn = respawnPoints[0];
+        foreach(SpawnPoint r in respawnPoints)
+        {
+            if(deadPlayer.gameObject.layer == LayerMask.NameToLayer("Team1"))
+            {
+                if(bestSpawn.team1Prescence > r.team1Prescence)
+                {
+                    bestSpawn = r;
+                }
+            }
+            if (deadPlayer.gameObject.layer == LayerMask.NameToLayer("Team2"))
+            {
+                if (r.team2Prescence > r.team1Prescence)
+                {
+                    bestSpawn = r;
+                }
+            }
+        }
+        deadPlayer.transform.position = bestSpawn.transform.position;
+        //Alter DDA in accordance to how well the player performed in their previous life  
+        CalculateCombatDDA(deadPlayer);
+        
 
         if (deadPlayer.combatAssist < 0) deadPlayer.combatAssist = 0;
         if (deadPlayer.navigationAssist < 0) deadPlayer.navigationAssist = 0;
         if (deadPlayer.accuracyAssist < 0) deadPlayer.accuracyAssist = 0;
 
-        deadPlayer.deaths += 1;
-        deadPlayer.killsPerLife = 0;
-        #endregion
-
-        #region Navigation DDA
-
-        #endregion
-        #region Accuracy DDA
-        #endregion
-
-
         //Move the character to a respawn point
         //Make them alive again.
         deadPlayer.assistance = deadPlayer.combatAssist + deadPlayer.navigationAssist + deadPlayer.accuracyAssist;
         CalculateDDASkew();
+    }
+
+    void CalculateCombatDDA(Character player)
+    {
+        int combatDeaths = player.reasonForDeath["Combat"];
+        player.avgDamageDealtPerLife = player.damageDealt / combatDeaths;
+        player.avgDamageTakenPerLife = player.damageTaken / combatDeaths;
+
+        //How many kills the player got before they died, divided by how much DDA they were getting
+        player.combatEfficacy = player.killDeathRatio / (player.combatAssist + 1);
+        //Increase assistance by how poorly the player has been performing over the game
+        //Deaths and damage dealt track these
+        player.combatAssist = combatDeaths - (player.combatEfficacy * (player.damageDealt / 100));
+        //Create a budget and choose where to spend assistance
+        float assistBudget = player.combatAssist;
+        //Damage Dealt, Damage Taken, Accuracy, Enemies Encountered
+        //Gets a ratio of damage dealt per life to determine the ratios of combat based DDA
+        player.healthAssist = player.avgDamageDealtPerLife / player.avgDamageTakenPerLife;
+        player.speedAssist = player.Health / player.avgDamageDealtPerLife;
+        player.accuracyAssist = player.speedAssist;
+        Vector3 normalised = new Vector3(player.healthAssist, player.speedAssist, player.accuracyAssist).normalized;
+
+        Debug.Log(normalised);
+
+        player.healthAssist = normalised.x;
+        player.speedAssist = normalised.y;
+        player.accuracyAssist = normalised.z;
+    }
+
+    void CalculateNavigationDDA(Character player)
+    {
+        int navDeaths = 0;
+        if (player.deaths != 0)
+        {
+            if (player.reasonForDeath.ContainsKey("Out of Bounds"))
+            {
+                navDeaths = player.reasonForDeath["Out of Bounds"];
+            }
+            //Navigation DDA is for getting players back into the fight quicker
+            //And to help them traverse the map, like making jumping gaps easier
+            //reducing respawn timers and spawning you closer to your teammates
+            if (navDeaths / player.deaths >= navDeathMinRatio)
+            {
+                player.coyoteLimit = (navDeaths / player.deaths) * (1 + navDeathMinRatio);
+                if (player.causeOfLastDeath == "Out of Bounds") player.respawnLimit /= 2;
+            }
+
+            //If you spend a long time not fighting anyone
+            //The game will spawn you closer to enemies and allies
+            player.spawnKindness = player.previousLifeSpan / player.avgDamageDealtPerLife;
+        }
     }
 
     private void CalculateDDASkew()

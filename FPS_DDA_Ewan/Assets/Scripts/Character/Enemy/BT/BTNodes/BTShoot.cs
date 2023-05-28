@@ -6,18 +6,19 @@ using BehaviourTree;
 public class BTShoot : BTNode
 {
     public BaseWeapon gun;
-    public float accuracy;
+    public float inaccuracy;
+    private Vector3 t;
 
     private Character target = null;
     private Character self;
 
     private float timer;
 
-    public BTShoot()
+    public BTShoot(Character _self)
     {
-        target = EnemyBT.self.GetComponent<FieldOfView>().primaryTarget;
-        accuracy = EnemyBT.self.accuracy;
-        self = EnemyBT.self;
+        target = _self.GetComponent<FieldOfView>().primaryTarget;
+        inaccuracy = 1 - _self.accuracy;
+        self = _self;
     }
 
     public override NodeState Evaluate()
@@ -30,7 +31,9 @@ public class BTShoot : BTNode
         if (target != null)
         {
             Debug.Log("Shot");
-            self.gameObject.transform.LookAt(target.transform);
+            
+            self.gameObject.transform.LookAt(target.transform.position);
+            t = target.transform.forward + (Random.insideUnitSphere * inaccuracy);
             self.weapons[self.currentWeapon].FireWeapon(self.gunPoint);
             
         }
@@ -38,7 +41,7 @@ public class BTShoot : BTNode
         {
             parent.ClearData("enemy");
             target = null;
-            EnemyBT.self.GetComponent<FieldOfView>().primaryTarget = null;
+            self.GetComponent<FieldOfView>().primaryTarget = null;
         }
         state = NodeState.RUNNING;
         return state;
