@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//This Script was obtained from Sebastian Lague
+//This Script was obtained from Sebastian Lague, Dec 2015
+//https://youtu.be/rQG9aUWarwE
 public class FieldOfView : MonoBehaviour
 {
     public float viewRadius;

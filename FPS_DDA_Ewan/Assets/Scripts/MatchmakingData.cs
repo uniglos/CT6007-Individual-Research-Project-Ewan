@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-
+//https://prasetion.medium.com/saving-data-as-json-in-unity-4419042d1334
+//Adapted from this Medium Post by Prasetio Nugroho, 2019
 public class MatchmakingData : MonoBehaviour
 {
     static public MatchmakingData instance;
@@ -27,15 +28,23 @@ public class MatchmakingData : MonoBehaviour
 
     public void SaveGame(Queue<LifeData> lifeData, string playerName)
     {
-        dataPath = Application.persistentDataPath +"/"+ playerName+ "/MatchmakingData.dat";
-        if (File.Exists(dataPath))
+        dataPath = Application.persistentDataPath +"/"+ playerName;
+        string file = dataPath + "/MatchmakingData.dat";
+        if (Directory.Exists(dataPath))
         {
-            string data = JsonUtility.ToJson(lifeData, true);
-            System.IO.File.WriteAllText(dataPath, data);
+            if (File.Exists(file))
+            {
+                string data = JsonUtility.ToJson(lifeData, true);
+                System.IO.File.WriteAllText(dataPath, data);
+            }
+            else
+            {
+                File.Create(file);
+            }
         }
         else
         {
-            File.Create(dataPath);
+            Directory.CreateDirectory(dataPath);
         }
 
 
@@ -44,17 +53,26 @@ public class MatchmakingData : MonoBehaviour
 
     public Queue<LifeData> LoadGame(string playerName)
     {
-        dataPath = Application.persistentDataPath + "/" + playerName + "/MatchmakingData.dat";
-        if (File.Exists(dataPath))
+        dataPath = Application.persistentDataPath + "/" + playerName;
+        string file = dataPath + "/MatchmakingData.dat";
+        if (Directory.Exists(dataPath))
         {
-            string data = File.ReadAllText(dataPath);
-
-            Queue<LifeData> lives = JsonUtility.FromJson<Queue<LifeData>>(data);
-            return lives;
+            if (File.Exists(file))
+            {
+                string data = File.ReadAllText(file);
+                Queue<LifeData> lives = JsonUtility.FromJson<Queue<LifeData>>(data);
+                return lives;
+            }
+            else
+            {
+                File.Create(file);
+                return new Queue<LifeData>();
+            }
 
         }
         else
         {
+            Directory.CreateDirectory(dataPath);
             return new Queue<LifeData>();
         }
     }

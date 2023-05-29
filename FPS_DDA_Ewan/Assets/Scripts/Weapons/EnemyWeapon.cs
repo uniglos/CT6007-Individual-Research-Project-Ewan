@@ -46,7 +46,7 @@ public class EnemyWeapon : BaseWeapon
                     owner.bulletsHit += 1;
                     owner.currentLifeData.accuracy = (owner.bulletsHit / owner.bulletsFired);
                     owner.accuracy = (owner.bulletsHit / owner.bulletsFired);
-                    DealDamage(hit.collider.gameObject.GetComponent<Character>(), owner);
+                    DealDamage(hit.collider.gameObject.GetComponent<Character>(), owner.gameObject);
                 }
                 //Animate gun recoil
                 //Muzzle flash

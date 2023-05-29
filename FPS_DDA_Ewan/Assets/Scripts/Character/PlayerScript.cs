@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 //Most of this script is adapted from Brackeys' basic character controller script
+//https://youtu.be/_QajrabyTJc Brackeys, Oct 2019
 public class PlayerScript : Character
 {
     //public CharacterController characterController;

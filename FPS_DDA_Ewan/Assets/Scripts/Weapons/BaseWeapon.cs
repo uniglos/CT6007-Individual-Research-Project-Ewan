@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class BaseWeapon : MonoBehaviour
@@ -27,7 +28,8 @@ public class BaseWeapon : MonoBehaviour
     //private int bulletsFired;
     protected LayerMask layermask;
 
-
+    private Vector3 sphere;
+    bool doSphere;
 
     void Start()
     {
@@ -96,15 +98,16 @@ public class BaseWeapon : MonoBehaviour
             {
                 //Debug.Log("Rifle Fired");
                 Debug.DrawRay(_fpsCamera.position, _fpsCamera.forward*10, Color.red, 5.0f);
-                
                 Debug.Log(hit.collider.gameObject.name);
+                sphere = hit.point;
+                DrawWireCapsule(_fpsCamera.position, _fpsCamera.rotation, maxBulletMagnetism * owner.accuracyAssist, 10.0f);
                 if (hit.collider.gameObject.transform.root.GetComponent<Character>() != null
                     && hit.collider.gameObject.transform.root.GetComponent<Character>() != owner )
                 {
                     owner.bulletsHit += 1;
                     owner.currentLifeData.accuracy = (owner.bulletsHit / owner.bulletsFired);
                     owner.accuracy = (owner.bulletsHit / owner.bulletsFired);
-                    DealDamage(hit.collider.gameObject.GetComponent<Character>(), owner);
+                    DealDamage(hit.collider.gameObject.GetComponent<Character>(), owner.gameObject);
                 }
                 //Animate gun recoil
                 //Muzzle flash
@@ -113,9 +116,42 @@ public class BaseWeapon : MonoBehaviour
             rofTimer = 0.0f;
         }
     }
-    
-    public void DealDamage(Character target,Character self)
+
+    public static void DrawWireCapsule(Vector3 _pos, Quaternion _rot, float _radius, float _height, Color _color = default(Color))
     {
-        target.TakeDamage(damage,self);
+        if (_color != default(Color))
+            Handles.color = Gizmos.color;
+        Matrix4x4 angleMatrix = Matrix4x4.TRS(_pos, _rot, Handles.matrix.lossyScale);
+        using (new Handles.DrawingScope(angleMatrix))
+        {
+            var pointOffset = (_height - (_radius * 2)) / 2;
+
+            //draw sideways
+            Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.left, Vector3.back, -180, _radius);
+            Handles.DrawLine(new Vector3(0, pointOffset, -_radius), new Vector3(0, -pointOffset, -_radius));
+            Handles.DrawLine(new Vector3(0, pointOffset, _radius), new Vector3(0, -pointOffset, _radius));
+            Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.left, Vector3.back, 180, _radius);
+            //draw frontways
+            Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.back, Vector3.left, 180, _radius);
+            Handles.DrawLine(new Vector3(-_radius, pointOffset, 0), new Vector3(-_radius, -pointOffset, 0));
+            Handles.DrawLine(new Vector3(_radius, pointOffset, 0), new Vector3(_radius, -pointOffset, 0));
+            Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.back, Vector3.left, -180, _radius);
+            //draw center
+            Handles.DrawWireDisc(Vector3.up * pointOffset, Vector3.up, _radius);
+            Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, _radius);
+
+        }
+    }
+        private void OnDrawGizmos()
+    {
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(sphere, maxBulletMagnetism * owner.accuracyAssist);
+        doSphere = false;
+    }
+
+    protected void DealDamage(Character target,GameObject attacker)
+    {
+        target.TakeDamage(damage,attacker);
     }
 }

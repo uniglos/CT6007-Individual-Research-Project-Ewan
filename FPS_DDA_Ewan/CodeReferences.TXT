@@ -1,0 +1,11 @@
+GitHub Repo:
+https://github.com/uniglos/CT6007-Individual-Research-Project-Ewan
+
+References:
+https://youtu.be/RsuB837jy6w - Coyote Time, Matt Aspland, 2021
+
+https://www.youtube.com/watch?v=rQG9aUWarwE - Enemy Sight, Sebastian Lague, 2015
+
+https://youtu.be/aR6wt5BlE-E - Behaviour Tree AI, Mina Pêcheux, 2021
+
+https://youtu.be/_QajrabyTJc Character Controller, Brackeys, 2019

@@ -9969,7 +9969,7 @@ PrefabInstance:
     - target: {fileID: 3366138753575803268, guid: 92475f921e6e1094c97cb969cd9546da,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.68
+      value: 4.66
       objectReference: {fileID: 0}
     - target: {fileID: 3366138753575803268, guid: 92475f921e6e1094c97cb969cd9546da,
         type: 3}
@@ -11128,7 +11128,7 @@ PrefabInstance:
     - target: {fileID: 3876310351989799106, guid: 164118cafd653ad419989449346a6fd6,
         type: 3}
       propertyPath: kills
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3876310351989799106, guid: 164118cafd653ad419989449346a6fd6,
         type: 3}
@@ -11143,12 +11143,12 @@ PrefabInstance:
     - target: {fileID: 3876310351989799106, guid: 164118cafd653ad419989449346a6fd6,
         type: 3}
       propertyPath: coyoteLimit
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3876310351989799106, guid: 164118cafd653ad419989449346a6fd6,
         type: 3}
       propertyPath: accuracyAssist
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3876310351989799165, guid: 164118cafd653ad419989449346a6fd6,
         type: 3}

@@ -41,6 +41,7 @@ public class Character : MonoBehaviour
 
 
 
+
     //DDA variables
     //Make Subsystems for Combat, Navigation, Accuracy
     /*Combat:
@@ -59,7 +60,6 @@ public class Character : MonoBehaviour
     /* Accuracy:
      * Tracks accuracy
      * DDA Methods
-     *      Aim Assist per weapon
      *      Bullet Magnetism
                 */
 
@@ -74,7 +74,7 @@ public class Character : MonoBehaviour
     public int assists;
 
     public LifeData currentLifeData;
-    public Queue<LifeData> lives; //Save Load System
+    public Queue<LifeData> lives = new Queue<LifeData>(); //Save Load System
 
     public float distanceTravelled;
     public GameObject spawnPoint;
@@ -124,7 +124,7 @@ public class Character : MonoBehaviour
     public float assistance;
 
 
-
+    
     // Start is called before the first frame update
     public virtual void Start()
     {
@@ -137,36 +137,38 @@ public class Character : MonoBehaviour
         }
         defaultMaterial = renderer.material;
         //Load In LifeData Queue() to lives
-        if (name != null)
+        if (playerName != null)
         {
-            lives = MatchmakingData.instance.LoadGame(name);
+            lives = MatchmakingData.instance.LoadGame(playerName);
         }
-        foreach (LifeData i in lives)
+        if (lives != null)
         {
-            kills += i.kills;
-            damageDealt += i.damageDealt;
-            damageTaken += i.damageTaken;
-            accuracy += i.accuracy;
-            distanceTravelled += i.distanceTravelled;
-            timeSpentAlive += i.timeSpentAlive;
-            //playersFought.Add(i.playersFought);
-            playersEncountered += i.playersEncountered;
-            if (reasonForDeath.ContainsKey(i.deathCause))
+            foreach (LifeData i in lives)
             {
-                reasonForDeath[i.deathCause] += 1;
+                kills += i.kills;
+                damageDealt += i.damageDealt;
+                damageTaken += i.damageTaken;
+                accuracy += i.accuracy;
+                distanceTravelled += i.distanceTravelled;
+                timeSpentAlive += i.timeSpentAlive;
+                //playersFought.Add(i.playersFought);
+                playersEncountered += i.playersEncountered;
+                if (reasonForDeath.ContainsKey(i.deathCause))
+                {
+                    reasonForDeath[i.deathCause] += 1;
+                }
+                deaths += 1;
+
             }
-            deaths += 1;
-            
+            if (deaths > 0)
+            {
+                killDeathRatio = kills / deaths;
+                avgDamageDealtPerLife = damageDealt / deaths;
+                avgDamageTakenPerLife = damageTaken / deaths;
+                accuracy = accuracy / deaths;
+            }
         }
-        if(deaths >0)
-        {
-            killDeathRatio = kills / deaths;
-            avgDamageDealtPerLife = damageDealt / deaths;
-            avgDamageTakenPerLife = damageTaken / deaths;
-            accuracy = accuracy / deaths;
-        }
-
-
+        GameManager.instance.CalculateCombatDDA(this);
 
         health = 100;
         if (gameObject.GetComponent<EnemyBT>())
@@ -186,18 +188,21 @@ public class Character : MonoBehaviour
         //playersFought.Add(i.playersFought);
         playersEncountered = 0;
         deaths = 0;
+        currentLifeData = new LifeData();
     }
 
     // Update is called once per frame
     public virtual void Update()
     {
-        if (gameObject.GetComponent<EnemyBT>() == null)
+        if (!isDead)
         {
-            CharacterMovement();
-            //Aim and Fire
-            
+            if (gameObject.GetComponent<EnemyBT>() == null)
+            {
+                CharacterMovement();
+                //Aim and Fire
+                WeaponUpdate();
+            }
         }
-        WeaponUpdate();
         if (isDead)
         {
             gravity = 0;
@@ -218,7 +223,9 @@ public class Character : MonoBehaviour
                 respawnTimer = 0.0f;
                 respawnLimit = 4.0f;
                 transform.position = GameManager.instance.RespawnPlayer(this.gameObject);
-                Debug.Log("Respawn Point: " + GameManager.instance.RespawnPlayer(this.gameObject));
+                //Debug.Log("Respawn Point: " + GameManager.instance.RespawnPlayer(this.gameObject));
+                lives = MatchmakingData.instance.LoadGame(playerName);
+                currentLifeData = new LifeData();
                 characterController.enabled = true;
                 moveSpeed = moveSpeed + speedAssist;
             }
@@ -242,10 +249,11 @@ public class Character : MonoBehaviour
             matTimer += Time.deltaTime;
         }
     }
-    public void TakeDamage(float damage, Character attacker)
+    public void TakeDamage(float damage, GameObject dealer)
     {
-        if (!isDead)
+        if (!isDead&&dealer.GetComponent<Character>()!=null)
         {
+            Character attacker = dealer.GetComponent<Character>();
             gameObject.GetComponent<Renderer>().material.color = Color.red;
             matTimer = 0.0f;
             if (!playersFought.Contains(attacker.playerName))
@@ -265,23 +273,24 @@ public class Character : MonoBehaviour
             currentLifeData.damageTaken += damage;
             if (health <= 0)
             {
-                Die(attacker, "Combat");
+                Die(attacker.gameObject, "Combat");
             }
         }
         if(gameObject.GetComponent<EnemyBT>()!=null)
         {
-            transform.LookAt(attacker.transform);
+            transform.LookAt(dealer.transform);
         }
     }
 
-    public void Die(Character killer, string causeForDeath = "Unknown")
+    public void Die(GameObject deathCause, string causeForDeath = "Unknown")
     {
         //Perish
         isDead = true;
-        
+        Character killer;
         deaths += 1;
         causeOfLastDeath = causeForDeath;
-        if (killer != null)
+        Debug.Log(deathCause);
+        if (deathCause.TryGetComponent<Character>(out killer))
         {
             //Give score to player who killed you
             killer.score += scoreDropped;
@@ -308,6 +317,7 @@ public class Character : MonoBehaviour
 
         }
         lives.Enqueue(currentLifeData);
+        MatchmakingData.instance.SaveGame(lives,playerName);
     }
 
     protected virtual void CharacterMovement()

@@ -24,8 +24,11 @@ namespace BehaviourTree
         public override void Update()
         {
             base.Update();
-            if (_root != null)
-                _root.Evaluate();
+            if (!isDead)
+            {
+                if (_root != null)
+                    _root.Evaluate();
+            }
         }
 
         protected abstract BTNode SetupTree();

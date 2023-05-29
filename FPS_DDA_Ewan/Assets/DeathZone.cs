@@ -8,7 +8,7 @@ public class DeathZone : MonoBehaviour
     {
         if(other.gameObject.TryGetComponent<Character>(out Character character))
         {
-            character.Die(null,"Out of Bounds");
+            character.Die(this.gameObject,"Out of Bounds");
         }
     }
 }

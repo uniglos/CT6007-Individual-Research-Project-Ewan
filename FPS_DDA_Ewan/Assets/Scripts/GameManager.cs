@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     public Vector3 RespawnPlayer(GameObject self)
     {
         self.TryGetComponent<Character>(out Character deadPlayer);
-        CalculateNavigationDDA(deadPlayer);
+        
         SpawnPoint bestSpawn = respawnPoints[0];
         if (deadPlayer.deaths == 0)
         {
@@ -109,9 +109,10 @@ public class GameManager : MonoBehaviour
         //self.transform.position = bestSpawn.transform.position;
         //Debug.Log(deadPlayer.transform.position);
         //Debug.Log(bestSpawn.transform.position);
+        
         //Alter DDA in accordance to how well the player performed in their previous life  
         CalculateCombatDDA(deadPlayer);
-        
+        CalculateNavigationDDA(deadPlayer);
 
         if (deadPlayer.combatAssist < 0) deadPlayer.combatAssist = 0;
         if (deadPlayer.navigationAssist < 0) deadPlayer.navigationAssist = 0;
@@ -124,7 +125,7 @@ public class GameManager : MonoBehaviour
         return bestSpawn.transform.position;
     }
 
-    void CalculateCombatDDA(Character player)
+   public void CalculateCombatDDA(Character player)
     {
         player.reasonForDeath.TryGetValue("Combat", out int combatDeaths);
         if (combatDeaths != 0)
@@ -134,9 +135,11 @@ public class GameManager : MonoBehaviour
 
             //How many kills the player got before they died, divided by how much DDA they were getting
             player.combatEfficacy = (player.kills/combatDeaths) / (player.combatAssist + 1);
+
             //Increase assistance by how poorly the player has been performing over the game
             //Deaths and damage dealt track these
             player.combatAssist = combatDeaths - (player.combatEfficacy * (player.damageDealt / 100));
+
             if (player.combatAssist < 0) player.combatAssist = 0;
             //Create a budget and choose where to spend assistance
             float assistBudget = player.combatAssist;
