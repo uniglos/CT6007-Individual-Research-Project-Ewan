@@ -8,11 +8,13 @@ public class PlayerScript : Character
     //public CharacterController characterController;
 
     public HealthBarPlayer HealthBar;
+    public DDABars DDABars;
 
     
     public override void Start()
     {
-        base.Start();
+        base.Start(); 
+        originalCol = Color.blue;
     }
 
     // Update is called once per frame
@@ -20,6 +22,7 @@ public class PlayerScript : Character
     {
         base.Update();
         HealthBar.SetHealth(health);
+        DDABars.SetDDABars(combatAssist, navigationAssist, GameManager.instance.ddaSkew);
 
     }
 

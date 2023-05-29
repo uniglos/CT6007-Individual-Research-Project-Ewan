@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 392409229591705016}
   - component: {fileID: 5615776488477458585}
+  - component: {fileID: 8849013514275493008}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -30,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5615776488477458585
 MonoBehaviour:
@@ -57,5 +58,22 @@ MonoBehaviour:
   team1Score: 0
   team2Score: 0
   navDeathMinRatio: 0.25
-  respawnPoints: []
+  respawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   ddaSkew: 0
+--- !u!114 &8849013514275493008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5053439961261348890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565f710585b533848b0f8e97a9e6080c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

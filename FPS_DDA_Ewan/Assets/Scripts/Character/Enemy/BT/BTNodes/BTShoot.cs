@@ -17,7 +17,7 @@ public class BTShoot : BTNode
     public BTShoot(Character _self)
     {
         target = _self.GetComponent<FieldOfView>().primaryTarget;
-        inaccuracy = 1 - _self.accuracy;
+        inaccuracy = 1-_self.accuracy;
         self = _self;
     }
 
@@ -34,7 +34,7 @@ public class BTShoot : BTNode
             
             self.gameObject.transform.LookAt(target.transform.position);
             t = target.transform.forward + (Random.insideUnitSphere * inaccuracy);
-            self.weapons[self.currentWeapon].FireWeapon(self.gunPoint);
+            self.weapons[self.currentWeapon].FireWeapon(self.gunPoint,t);
             
         }
         if(target.playerDead)

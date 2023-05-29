@@ -79,6 +79,7 @@ GameObject:
   - component: {fileID: 5057348235674510855}
   - component: {fileID: 5057348235674510848}
   - component: {fileID: 1088523109}
+  - component: {fileID: 3049864898258323520}
   m_Layer: 7
   m_Name: BTEnemy
   m_TagString: Player
@@ -230,7 +231,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   weapons:
-  - {fileID: 4058168016584896265}
+  - {fileID: 25088047418575521}
   - {fileID: 0}
   currentWeapon: 0
   gunPoint: {fileID: 3266078488840156884}
@@ -295,6 +296,19 @@ MonoBehaviour:
     m_Bits: 256
   visibleTargets: []
   primaryTarget: {fileID: 0}
+--- !u!65 &3049864898258323520
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5057348235674510863}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.25, y: 2, z: 0.25}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4145381818563894391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -363,24 +377,49 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rifle
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 132531293433492350, guid: b22ab41aa19877f419a954e177511b9e, type: 3}
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: b22ab41aa19877f419a954e177511b9e, type: 3}
+--- !u!1 &2403764673176914862 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1791511196752074713, guid: b22ab41aa19877f419a954e177511b9e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4145381818563894391}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &25088047418575521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2403764673176914862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d49f1d30f30b040bbbbae9841a6659, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzleFlash: {fileID: 5288877679266145000}
+  isAutomatic: 1
+  ammo: 0
+  magCounter: 20
+  magSize: 20
+  reloadTime: 2
+  reloadTimer: 0
+  damage: 3
+  bulletsPer10Seconds: 30
+  rofTimer: 0
+  weaponPower: 0
+  maxBulletMagnetism: 0.6
 --- !u!4 &3831902534342404514 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 912820877663991253, guid: b22ab41aa19877f419a954e177511b9e,
     type: 3}
   m_PrefabInstance: {fileID: 4145381818563894391}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4058168016584896265 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 132531293433492350, guid: b22ab41aa19877f419a954e177511b9e,
+--- !u!198 &5288877679266145000 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8134210074533674655, guid: b22ab41aa19877f419a954e177511b9e,
     type: 3}
   m_PrefabInstance: {fileID: 4145381818563894391}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10733f9791122914cb185486761bf8b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

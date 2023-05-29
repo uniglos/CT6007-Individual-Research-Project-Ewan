@@ -56,4 +56,15 @@ public class EnemyBT : BTree
 
         return root;
     }
+
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (!isDead)
+    //    {
+    //        if (other.gameObject.GetComponent<EnemyBT>() != null)
+    //        {
+    //            isDead = true;
+    //        }
+    //    }
+    //}
 }

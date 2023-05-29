@@ -11,6 +11,15 @@ public class GameManager : MonoBehaviour
     public int team1Score;
     public int team2Score;
 
+    List<float> team1Values = new List<float>();
+    List<float> team2Values = new List<float>();
+    float team1Skew = 0;
+    float team2Skew = 0;
+    float t1min = 1000;
+    float t2min = 1000;
+    float t1max = 0;
+    float t2max = 0;
+
     public float navDeathMinRatio = 0.25f;
     public SpawnPoint[] respawnPoints;
 
@@ -75,7 +84,8 @@ public class GameManager : MonoBehaviour
         if (deadPlayer.deaths == 0)
         {
             bestSpawn = respawnPoints[Random.Range(0, respawnPoints.Length)];
-            return bestSpawn.transform.position;
+            Vector3 spawn = new Vector3(bestSpawn.transform.position.x+ Random.Range(0.0f,3.0f),0.5f,bestSpawn.transform.position.z + Random.Range(0.0f, 3.0f));
+            return spawn;
         }
         
         foreach(SpawnPoint r in respawnPoints)
@@ -117,51 +127,61 @@ public class GameManager : MonoBehaviour
     void CalculateCombatDDA(Character player)
     {
         player.reasonForDeath.TryGetValue("Combat", out int combatDeaths);
-        if(combatDeaths==0)
+        if (combatDeaths != 0)
         {
-            combatDeaths = 1;
+            player.avgDamageDealtPerLife = player.damageDealt / combatDeaths;
+            player.avgDamageTakenPerLife = player.damageTaken / combatDeaths;
+
+            //How many kills the player got before they died, divided by how much DDA they were getting
+            player.combatEfficacy = (player.kills/combatDeaths) / (player.combatAssist + 1);
+            //Increase assistance by how poorly the player has been performing over the game
+            //Deaths and damage dealt track these
+            player.combatAssist = combatDeaths - (player.combatEfficacy * (player.damageDealt / 100));
+            if (player.combatAssist < 0) player.combatAssist = 0;
+            //Create a budget and choose where to spend assistance
+            float assistBudget = player.combatAssist;
+            //Damage Dealt, Damage Taken, Accuracy, Enemies Encountered
+            //Gets a ratio of damage dealt per life to determine the ratios of combat based DDA
+            if (player.avgDamageDealtPerLife == 0) player.avgDamageDealtPerLife = 1;
+            if (player.avgDamageTakenPerLife == 0) player.avgDamageTakenPerLife = 1;
+
+            player.healthAssist = player.avgDamageDealtPerLife / player.avgDamageTakenPerLife; //Damage dealt should be 1:1 to Damage Taken
+            player.speedAssist = (100 / player.avgDamageDealtPerLife)/2; //Damage dealt should be at a 1:1 ratio to player health
+            player.accuracyAssist = player.speedAssist/2; //Adjust accuracy to account for new speed
+            Vector3 normalised = new Vector3(player.healthAssist, player.speedAssist, player.accuracyAssist).normalized;
+
+            Debug.Log(normalised);
+
+            player.healthAssist = normalised.x * assistBudget;
+            player.speedAssist = normalised.y * assistBudget;
+            player.accuracyAssist = normalised.z * assistBudget;
+            
         }
-        player.avgDamageDealtPerLife = player.damageDealt / combatDeaths;
-        player.avgDamageTakenPerLife = player.damageTaken / combatDeaths;
-
-        //How many kills the player got before they died, divided by how much DDA they were getting
-        player.combatEfficacy = player.killDeathRatio / (player.combatAssist + 1);
-        //Increase assistance by how poorly the player has been performing over the game
-        //Deaths and damage dealt track these
-        player.combatAssist = combatDeaths - (player.combatEfficacy * (player.damageDealt / 100));
-        //Create a budget and choose where to spend assistance
-        float assistBudget = player.combatAssist;
-        //Damage Dealt, Damage Taken, Accuracy, Enemies Encountered
-        //Gets a ratio of damage dealt per life to determine the ratios of combat based DDA
-        player.healthAssist = player.avgDamageDealtPerLife / player.avgDamageTakenPerLife;
-        player.speedAssist = player.Health / player.avgDamageDealtPerLife;
-        player.accuracyAssist = player.speedAssist;
-        Vector3 normalised = new Vector3(player.healthAssist, player.speedAssist, player.accuracyAssist).normalized;
-
-        Debug.Log(normalised);
-
-        player.healthAssist = normalised.x * assistBudget;
-        player.speedAssist = normalised.y * assistBudget;
-        player.accuracyAssist = normalised.z * assistBudget;
         
     }
 
     void CalculateNavigationDDA(Character player)
     {
-        int navDeaths = 0;
         if (player.deaths != 0)
         {
-            if (player.reasonForDeath.ContainsKey("Out of Bounds"))
-            {
-                navDeaths = player.reasonForDeath["Out of Bounds"];
-            }
+            player.reasonForDeath.TryGetValue("Out of Bounds", out int navDeaths);
+            player.reasonForDeath.TryGetValue("Combat", out int combatDeaths);
             //Navigation DDA is for getting players back into the fight quicker
             //And to help them traverse the map, like making jumping gaps easier
             //reducing respawn timers and spawning you closer to your teammates
+            if(combatDeaths > 0)
+            {
+                player.navigationAssist = navDeaths / combatDeaths;
+            }
+            else
+            {
+                player.navigationAssist = navDeaths / player.deaths;
+            }
             if (navDeaths / player.deaths >= navDeathMinRatio)
             {
+                
                 player.coyoteLimit = (navDeaths / player.deaths) * (1 + navDeathMinRatio);
-                if (player.causeOfLastDeath == "Out of Bounds") player.respawnLimit /= 2;
+                if (player.causeOfLastDeath == "Out of Bounds") player.respawnLimit *= (navDeaths/player.deaths);
             }
 
             //If you spend a long time not fighting anyone
@@ -172,16 +192,10 @@ public class GameManager : MonoBehaviour
 
     private void CalculateDDASkew()
     {
-        List<float> team1Values = new List<float>();
-        List<float> team2Values = new List<float>();
-        float team1Skew = 0;
-        float team2Skew = 0;
-        float t1min = 1000;
-        float t2min= 1000;
-        float t1max = 0;
-        float t2max = 0;
 
-        foreach(var p in team1)
+        team1Values = new List<float>();
+        team2Values = new List<float>();
+        foreach (var p in team1)
         {
             team1Values.Add(p.GetComponent<Character>().assistance);
             if(p.GetComponent<Character>().assistance < t1min)
@@ -205,16 +219,31 @@ public class GameManager : MonoBehaviour
                 t2max = p.GetComponent<Character>().assistance;
             }
         }
-        foreach(float p in team1Values)
+        if (t1max - t1min <= 0)
         {
-            team1Skew = (p - t1min) / t1max - t1min;
+            team1Skew = 0;
         }
-        foreach (float p in team2Values)
+        else
         {
-            team2Skew = (p - t2min) / t2max - t2min;
+            foreach (float p in team1Values)
+            {
+                team1Skew += (p - t1min) / t1max - t1min;
+            }
+            
         }
-
-        ddaSkew = -team1Skew + team2Skew;
+        if (t2max - t2min <= 0)
+        {
+            team2Skew = 0;
+        }
+        else
+        {
+            foreach (float p in team2Values)
+            {
+                team2Skew += (p - t2min) / t2max - t2min;
+            }
+        }
+        Vector2 skews = new Vector2(team1Skew, team2Skew).normalized;
+        ddaSkew = -skews.x + skews.y;
 
     }
 }
