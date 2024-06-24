@@ -19,7 +19,7 @@ public class BTHaveTarget : BTNode
         if(self.GetComponent<FieldOfView>().visibleTargets.Count >0)
         {
             state = NodeState.SUCCESS;
-            Debug.Log("Have Target");
+            //Debug.Log("Have Target");
             parent.SetData("target", self.GetComponent<FieldOfView>().visibleTargets[0]);
             self.GetComponent<FieldOfView>().primaryTarget = 
                 self.GetComponent<FieldOfView>().visibleTargets[0].gameObject.GetComponent<Character>();

@@ -15,7 +15,7 @@ public class FieldOfView : MonoBehaviour
 
     public List<Transform> visibleTargets = null;
 
-    public Character primaryTarget = null;
+   public Character primaryTarget = null;
 
     private void Start()
     {
@@ -34,6 +34,10 @@ public class FieldOfView : MonoBehaviour
     void FindVisibleTargets()
     {
         visibleTargets.Clear();
+        if(primaryTarget != null && primaryTarget.playerDead == false)
+        {
+            primaryTarget = null;
+        }
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {

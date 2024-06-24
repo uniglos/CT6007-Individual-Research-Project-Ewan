@@ -16,7 +16,7 @@ public class EnemyBT : BTree
         
         self = this.gameObject.GetComponent<Character>();
         agent = this.gameObject.GetComponent<NavMeshAgent>();
-        agent.stoppingDistance = 3;
+        agent.stoppingDistance = Random.Range(3,11);
     }
 
     public override void Update()
@@ -45,7 +45,7 @@ public class EnemyBT : BTree
                 new BTHaveTarget(self),
                 new BTPursue(self,agent),
                 new BTShoot(self),
-                /*new BTStrafe()*/
+                new BTStrafe(30,3.0f,agent)
             }),
             new BTWander(30, 3.0f,agent)
         }); 

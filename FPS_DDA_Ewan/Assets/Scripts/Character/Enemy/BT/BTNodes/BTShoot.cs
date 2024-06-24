@@ -23,18 +23,21 @@ public class BTShoot : BTNode
 
     public override NodeState Evaluate()
     {
-        Debug.Log("Start Shoot");
+        //Debug.Log("Start Shoot");
         if(target == null)
         {
             target = (Character)parent.GetData("enemy");
         }
         if (target != null)
         {
-            Debug.Log("Shot");
+            //Debug.Log("Shot");
             
             self.gameObject.transform.LookAt(target.transform.position);
             t = target.transform.forward + (Random.insideUnitSphere * inaccuracy);
             self.weapons[self.currentWeapon].FireWeapon(self.gunPoint,t);
+            state = NodeState.SUCCESS;
+            //Debug.Log("Returned Shoot State Success");
+            return state;
             
         }
         if(target.playerDead)
@@ -44,6 +47,7 @@ public class BTShoot : BTNode
             self.GetComponent<FieldOfView>().primaryTarget = null;
         }
         state = NodeState.RUNNING;
+       // Debug.Log("Returned Shoot State RUNNING");
         return state;
     }
 

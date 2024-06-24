@@ -291,31 +291,32 @@ public class Character : MonoBehaviour
         causeOfLastDeath = causeForDeath;
         Debug.Log(deathCause);
         if (deathCause.TryGetComponent<Character>(out killer))
-        {
-            //Give score to player who killed you
-            killer.score += scoreDropped;
+            {
+                //Give score to player who killed you
+                killer.score += scoreDropped;
             
 
-            //Alter killers stats
-            killer.currentLifeData.kills += 1;
-            killer.kills += 1;
-            //killer.avgkillsPerLife += 1;
-            if (killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Contains(this.transform))
-            {
-                killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Remove(this.transform);
+                //Alter killers stats
+                killer.currentLifeData.kills += 1;
+                killer.kills += 1;
+                //killer.avgkillsPerLife += 1;
+                if (killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Contains(this.transform))
+                {
+                    killer.gameObject.GetComponent<FieldOfView>().visibleTargets.Remove(this.transform);
+                }
             }
-        }
         Debug.Log(causeForDeath);
-        Debug.Log(reasonForDeath);
+        
         if (!reasonForDeath.ContainsKey(causeForDeath))
-        {
-            reasonForDeath.Add(causeForDeath, 1);
-        }
+            {
+                reasonForDeath.Add(causeForDeath, 1);
+            }
         else
-        {
-            reasonForDeath[causeForDeath] += 1;
+            {
+                reasonForDeath[causeForDeath] += 1;
 
-        }
+            }
+        Debug.Log(reasonForDeath[causeForDeath]);
         lives.Enqueue(currentLifeData);
         MatchmakingData.instance.SaveGame(lives,playerName);
     }

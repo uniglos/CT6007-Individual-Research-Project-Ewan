@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour
             player.accuracyAssist = player.speedAssist/2; //Adjust accuracy to account for new speed
             Vector3 normalised = new Vector3(player.healthAssist, player.speedAssist, player.accuracyAssist).normalized;
 
-            Debug.Log(normalised);
+            //Debug.Log(normalised);
 
             player.healthAssist = normalised.x * assistBudget;
             player.speedAssist = normalised.y * assistBudget;

@@ -23,7 +23,7 @@ public class BTPursue : BTNode
 
     public override NodeState Evaluate()
     {
-        Debug.Log("Tried to Find Enemy");
+        //Debug.Log("Tried to Find Enemy");
 
         if (t == null)
         {
@@ -32,8 +32,10 @@ public class BTPursue : BTNode
         if(t != null)
         {
             timer += Time.deltaTime;
-            agent.SetDestination(t.position + ((agent.transform.position - t.position).normalized * agent.stoppingDistance));
-
+            if (Vector3.Distance(self.transform.position, t.transform.position) > 5f)
+            {
+                agent.SetDestination(t.position + ((agent.transform.position - t.position).normalized * agent.stoppingDistance));
+            }
             //Debug.Log("Pursuing Enemy");
             if (timer > 2.0f)
             {

@@ -98,9 +98,9 @@ public class BaseWeapon : MonoBehaviour
             {
                 //Debug.Log("Rifle Fired");
                 Debug.DrawRay(_fpsCamera.position, _fpsCamera.forward*10, Color.red, 5.0f);
-                Debug.Log(hit.collider.gameObject.name);
+                //Debug.Log(hit.collider.gameObject.name);
                 sphere = hit.point;
-                DrawWireCapsule(_fpsCamera.position, _fpsCamera.rotation, maxBulletMagnetism * owner.accuracyAssist, 10.0f);
+                //DrawWireCapsule(_fpsCamera.position, _fpsCamera.rotation, maxBulletMagnetism * owner.accuracyAssist, 10.0f);
                 if (hit.collider.gameObject.transform.root.GetComponent<Character>() != null
                     && hit.collider.gameObject.transform.root.GetComponent<Character>() != owner )
                 {
